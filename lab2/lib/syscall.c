@@ -96,43 +96,43 @@ void printf(const char *format,...){
 			state = 1;
 		switch(state){
 			case 0:					
-					buffer[count++] = format[i];
-					if(count==MAX_BUFFER_SIZE) {
-						syscall(SYS_WRITE, STD_OUT, (uint32_t)buffer, (uint32_t)MAX_BUFFER_SIZE, 0, 0);
-						count=0;
-					}
-					break;
+				buffer[count++] = format[i];
+				if(count==MAX_BUFFER_SIZE) {
+					syscall(SYS_WRITE, STD_OUT, (uint32_t)buffer, (uint32_t)MAX_BUFFER_SIZE, 0, 0);
+					count=0;
+				}
+				break;
 			case 1:
-					++i;
-					if(format[i] == 'd'){						
-						decimal = *(int*)paraList;
-						paraList = (void*)((uint32_t)paraList + 4);
-						count = dec2Str(decimal, buffer, MAX_BUFFER_SIZE, count);
-					}
-					else if(format[i] == 'x'){						
-						hexadecimal = *((uint32_t*)paraList);
-						paraList = (void*)((uint32_t)paraList+4);
-						count = hex2Str(hexadecimal, buffer, MAX_BUFFER_SIZE, count);
-					}
-					else if(format[i] == 'c'){
-						character = *((char*)paraList );
-						paraList = (void*)((uint32_t)paraList+4);
-						buffer[count++] = character;
-						if(count==MAX_BUFFER_SIZE) {
-						syscall(SYS_WRITE, STD_OUT, (uint32_t)buffer, (uint32_t)MAX_BUFFER_SIZE, 0, 0);
-						count=0;
-					}
-					}
-					else if(format[i] == 's'){						
-						string = *((char**)paraList);
-						paraList = (void*)((uint32_t)paraList+4);
-						count = str2Str(string, buffer, MAX_BUFFER_SIZE, count);
-					}
-					else {
-						state = 2;
-					}
-					state = 0;
-					break;
+				++i;
+				if(format[i] == 'd'){						
+					decimal = *(int*)paraList;
+					paraList = (void*)((uint32_t)paraList + 4);
+					count = dec2Str(decimal, buffer, MAX_BUFFER_SIZE, count);
+				}
+				else if(format[i] == 'x'){						
+					hexadecimal = *((uint32_t*)paraList);
+					paraList = (void*)((uint32_t)paraList+4);
+					count = hex2Str(hexadecimal, buffer, MAX_BUFFER_SIZE, count);
+				}
+				else if(format[i] == 'c'){
+					character = *((char*)paraList );
+					paraList = (void*)((uint32_t)paraList+4);
+					buffer[count++] = character;
+					if(count==MAX_BUFFER_SIZE) {
+					syscall(SYS_WRITE, STD_OUT, (uint32_t)buffer, (uint32_t)MAX_BUFFER_SIZE, 0, 0);
+					count=0;
+				}
+				}
+				else if(format[i] == 's'){						
+					string = *((char**)paraList);
+					paraList = (void*)((uint32_t)paraList+4);
+					count = str2Str(string, buffer, MAX_BUFFER_SIZE, count);
+				}
+				else {
+					state = 2;
+				}
+				state = 0;
+				break;
 			case 2:assert(0);
 			default:assert(0);
 		}
@@ -178,41 +178,41 @@ int scanf(const char* format,...)
 	getStr(buf, MAX_BUFFER_SIZE);
 	while(format[i] != '\0')
 	{
-			if(format[i] == '%'){
-				++i;
-				char ch = format[i];
-				switch(ch){
-					case 'c':
-								count = helper(buf, count);															
-								*(*(char**)paraList) = buf[count];
-								++count;							
-								paraList = (void*)((uint32_t)paraList + 4);
-								++ret;
-								break;
-					case 's':
-								count = helper(buf, count);
-								int i = 0;
-								for(; buf[count] != ' ' && buf[count] != '\0'; ++count)
-									{
-										(*((char**)paraList))[i++] = buf[count];
-									}
-									paraList = (void*)((uint32_t)paraList + 4);
-									++ret;
-									break;
-					case 'd':
-								count = helper(buf, count);	
-								int j = 0;				
-								for(; buf[count] >= '0' && buf[count] <= '9'; ++count)
-									str[j++] = buf[count];
-								*(*(int**)paraList )= str2int( str, j);
-								paraList = (void*)((uint32_t)paraList + 4);								
-								++ret;								
-								break;
-					default:
-								printf("format is not supported!");
-				}
-			}
+		if(format[i] == '%'){
 			++i;
+			char ch = format[i];
+			switch(ch){
+				case 'c':
+					count = helper(buf, count);															
+					*(*(char**)paraList) = buf[count];
+					++count;							
+					paraList = (void*)((uint32_t)paraList + 4);
+					++ret;
+					break;
+				case 's':
+					count = helper(buf, count);
+					int i = 0;
+					for(; buf[count] != ' ' && buf[count] != '\0'; ++count)
+						{
+							(*((char**)paraList))[i++] = buf[count];
+						}
+						paraList = (void*)((uint32_t)paraList + 4);
+						++ret;
+						break;
+				case 'd':
+					count = helper(buf, count);	
+					int j = 0;				
+					for(; buf[count] >= '0' && buf[count] <= '9'; ++count)
+						str[j++] = buf[count];
+					*(*(int**)paraList )= str2int( str, j);
+					paraList = (void*)((uint32_t)paraList + 4);								
+					++ret;								
+					break;
+				default:
+					printf("format is not supported!");
+			}
+		}
+		++i;
 	}
 	return ret;
 }
