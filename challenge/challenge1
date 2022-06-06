@@ -1,0 +1,20 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#define SIZE 1000
+int main()
+{
+    char buf[SIZE];
+    int p[2], backfd;
+    char command[50];
+    pipe(p);
+    strcpy(command, "ls -l");
+    backfd = dup(STDOUT_FILENO);
+    dup2(p[1],STDOUT_FILENO);/*redirect stdout to pipe file*/
+    system(command);
+    read(p[0], buf, SIZE);
+    dup2(backfd, STDOUT_FILENO);/*restore stdout*/
+   printf("%s", buf);
+    return 0;
+}
